@@ -27,9 +27,9 @@ func getRepos(repo_path string, info os.FileInfo, err error) error {
 	if info != nil && info.IsDir() && strings.HasSuffix(repo_path, ".git") && repo_path != ".git" {
 		if repo, e := readRepo(repo_path); e == nil {
 			Repos[repo_path] = repo
-			fmt.Printf("Adding '%s'", repo_path)
+			//fmt.Printf("Adding '%s'\n", repo_path)
 		} else {
-			fmt.Printf("Error adding '%s' (%s)", repo_path, e)
+			fmt.Printf("Error adding '%s' (%s)\n", repo_path, e)
 		}
 		return filepath.SkipDir
 	}
@@ -48,12 +48,13 @@ func readRepo(repo_path string) (*Repo, error) {
 		if e == nil {
 			c, e = r.LookupCommit(ref.Oid)
 		} else {
-			fmt.Printf("Error reading repo '%s' (%s)\n",
-				repo_path, e)
+			return nil, e
 		}
 		if e == nil {
 			repo.Author = c.Author
 			repo.CommitMessage = c.CommitMessage
+		} else {
+			return nil, e
 		}
 	}
 	return repo, nil
